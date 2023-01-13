@@ -7,29 +7,33 @@ from datetime import date, datetime
 
 
 FORMAT = "%Y-%m-%d %H:%M:%S"
+FILE = "log.csv"
+DIR = click.get_app_dir("Workhours")
+FILE_PATH = os.path.join(DIR, FILE)
 
 def get_current_time() -> datetime:
     return datetime.now()
 
 def save_hours(time_of_action: date, action: str) -> None:
-    with click.open_file("teste.csv", mode="a") as f:
+    with click.open_file(FILE_PATH, mode="a") as f:
         f.write(f"{time_of_action.strftime(FORMAT)},{action}\n")
 
 def get_last_entry() -> Tuple[str, str]:
-    message = subprocess.check_output(["tail", "-n 1", "teste.csv"])
+    message = subprocess.check_output(["tail", "-n 1", FILE_PATH])
     return tuple(message.decode("utf-8").replace("\n", "").split(","))
 
 @click.group(invoke_without_command=True)
 @click.pass_context
 def cli(ctx):
     """Track working hours."""
+    os.makedirs(DIR, exist_ok=True)
     if ctx.invoked_subcommand is None:
         status()
 
 @cli.command()
 def status():
     """Show current working status."""
-    if not os.path.isfile("teste.csv"):
+    if not os.path.isfile(FILE_PATH):
         click.echo("working hours not initiated.")
         return
 
