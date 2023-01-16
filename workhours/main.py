@@ -54,16 +54,30 @@ def status():
 @cli.command()
 def hi():
     """Start counting work hours."""
-    date = get_current_time()
-    save_hours(date, "start")
-    click.echo(f"Tracking working hours started at {date.strftime(FORMAT)}")
+    last_entry = get_last_entry()
+    last_date, last_action = last_entry
+    if last_action == "start":
+        click.echo("You're already working.")
+    elif last_action == "stop":
+        date = get_current_time()
+        save_hours(date, "start")
+        click.echo(f"Tracking working hours started at {date.strftime(FORMAT)}")
+    else:
+        click.echo(f"Last action not recognized: {last_action}")
 
 @cli.command()
 def bye():
     """Stop counting work hours."""
-    date = get_current_time()
-    save_hours(date, "stop")
-    click.echo(f"Tracking work hours stoped at {date.strftime(FORMAT)}")
+    last_entry = get_last_entry()
+    last_date, last_action = last_entry
+    if last_action == "stop":
+        click.echo("You already stopped working.")
+    elif last_action == "start":
+        date = get_current_time()
+        save_hours(date, "stop")
+        click.echo(f"Tracking work hours stopped at {date.strftime(FORMAT)}")
+    else:
+        click.echo(f"Last action not recognized: {last_action}")
 
 if __name__ == "__main__":
     cli()
