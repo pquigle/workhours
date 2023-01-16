@@ -47,7 +47,7 @@ def status():
         time_difference = (date - datetime.strptime(last_date, FORMAT)).total_seconds()
         working_hours = time_difference // 3600
         working_minutes = (time_difference - (working_hours * 3600)) // 60
-        click.echo(f"You have been working for {int(working_hours)} hours and {int(working_minutes)} minutes.")
+        click.echo(f"You have focused for {int(working_hours)} hours and {int(working_minutes)} minutes.")
     else:
         click.echo(f"Last action not recognized: {last_action}")
 
