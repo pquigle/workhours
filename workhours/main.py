@@ -1,4 +1,6 @@
 import os
+import time
+from tqdm import tqdm
 from typing import Tuple
 import click
 import subprocess
@@ -76,6 +78,29 @@ def bye():
         date = get_current_time()
         save_hours(date, "stop")
         click.echo(f"Tracking work hours stopped at {date.strftime(FORMAT)}")
+    else:
+        click.echo(f"Last action not recognized: {last_action}")
+
+@cli.command()
+def lunch():
+    """Take 30 minute break."""
+    last_entry = get_last_entry()
+    last_date, last_action = last_entry
+    if last_action == "stop":
+        click.echo("You already stopped working.")
+    elif last_action == "start":
+        # Stop work and start lunch
+        date = get_current_time()
+        save_hours(date, "stop")
+        click.echo(f"Started lunch at {date.strftime(FORMAT)}")
+
+        # Wait 30 minutes, initialize progress bar
+        for i in tqdm(range(30)):
+            time.sleep(60)
+        
+        # Resume work
+        click.echo(f"Ended lunch at {date.strftime(FORMAT)}")
+        save_hours(date, "start")
     else:
         click.echo(f"Last action not recognized: {last_action}")
 
