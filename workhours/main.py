@@ -7,11 +7,14 @@ import subprocess
 
 from datetime import date, datetime
 
+#-------------------------------global vars-----------------------------------#
 
 FORMAT = "%Y-%m-%d %H:%M:%S"
-FILE = "log.csv"
+FILE = "timecard.csv"
 DIR = click.get_app_dir("Workhours")
 FILE_PATH = os.path.join(DIR, FILE)
+
+#--------------------------------functions------------------------------------#
 
 def get_current_time() -> datetime:
     return datetime.now()
@@ -107,8 +110,12 @@ def lunch():
 @cli.command()
 def log():
     """Show log of work hours (last 10 entries)."""
+    #TODO: show last 2 days rather than static 10 entries
     message = subprocess.check_output(["tail", "-n 10", FILE_PATH])
     print(message.decode("utf-8"))
+
+
+#-----------------------------------main--------------------------------------#
 
 if __name__ == "__main__":
     cli()
