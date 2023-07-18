@@ -104,5 +104,11 @@ def lunch():
     else:
         click.echo(f"Last action not recognized: {last_action}")
 
+@cli.command()
+def log():
+    """Show log of work hours (last 10 entries)."""
+    message = subprocess.check_output(["tail", "-n 10", FILE_PATH])
+    print(message.decode("utf-8"))
+
 if __name__ == "__main__":
     cli()
