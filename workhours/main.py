@@ -5,6 +5,7 @@ from tqdm import tqdm
 from typing import Tuple
 import click
 import subprocess
+import pandas as pd
 
 from datetime import date, datetime, timedelta
 
@@ -117,6 +118,36 @@ def log():
     #TODO: show last 2 days rather than static 10 entries
     message = subprocess.check_output(["tail", "-n 10", FILE_PATH])
     print(message.decode("utf-8"))
+
+
+@cli.command()
+def hours():
+    """Count hours worked in current timecard."""
+    df = pd.read_csv(FILE_PATH, header=None, names=['time', 'action'])
+
+    # Check that the first action is start
+    if df.iloc[0]['action'] != 'start':
+        raise Exception('First action in timecard is not start')
+    
+    # Split the dataframe into start and stop actions
+    df_start = df[df['action'] == 'start']
+    df_stop = df[df['action'] == 'stop']
+
+    # Check that the number of start and stop actions are equal
+    # else ignore last start action
+    if len(df_start) != len(df_stop):
+        df_start = df_start.iloc[:-1]
+
+    # Calculate the time difference between start and stop actions
+    df_start['time'] = pd.to_datetime(df_start['time'])
+    df_stop['time'] = pd.to_datetime(df_stop['time'])
+    time_diff = df_stop['time'] - df_start['time']
+
+    # Sum the time difference
+    total_time = time_diff.sum()
+
+    # Print the total time
+    print(f'Total time worked: {total_time}')
 
 
 @cli.command()
