@@ -126,7 +126,7 @@ def hours():
     df = pd.read_csv(FILE_PATH, header=None, names=['time', 'action'])
 
     # Check that the first action is start
-    if df.iloc[0]['action'] != 'start':
+    if df.iloc[0, 'action'] != 'start':
         raise Exception('First action in timecard is not start')
     
     # Split the dataframe into start and stop actions
