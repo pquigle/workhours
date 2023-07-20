@@ -1,11 +1,12 @@
 import os
 import time
+import shutil
 from tqdm import tqdm
 from typing import Tuple
 import click
 import subprocess
 
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 #-------------------------------global vars-----------------------------------#
 
@@ -102,8 +103,9 @@ def lunch():
             time.sleep(60)
         
         # Resume work
-        click.echo(f"Ended lunch at {date.strftime(FORMAT)}")
+        date = get_current_time()
         save_hours(date, "start")
+        click.echo(f"Ended lunch at {date.strftime(FORMAT)}")
     else:
         click.echo(f"Last action not recognized: {last_action}")
 
@@ -114,6 +116,29 @@ def log():
     message = subprocess.check_output(["tail", "-n 10", FILE_PATH])
     print(message.decode("utf-8"))
 
+
+@cli.command()
+def friday():
+    """Finish work for the week. Move the current time to legacy"""
+    
+    # Walk back until we reach Monday of this week
+    day = datetime.now()
+    while day.day != 'Mon':
+        day -= timedelta(days=1)
+
+    # If not checked out, say bye
+    bye()
+
+    # Move the log to legacy
+    legacy_file = os.path.join(DIR, day.strftime('%Y%m%d') + '_timecard.csv')
+    with open(legacy_file, 'a+') as legacy:
+        with open(FILE_PATH, 'r') as current:
+            legacy.write(current.read())
+
+    # Delete current timecard
+    os.remove(current)
+
+    click.echo("Have a nice weekend!")
 
 #-----------------------------------main--------------------------------------#
 
