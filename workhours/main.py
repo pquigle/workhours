@@ -40,7 +40,9 @@ def cli(ctx):
 def status():
     """Show current working status."""
     if not os.path.isfile(FILE_PATH):
-        click.echo("working hours not initiated.")
+        date = get_current_time()
+        click.echo("initiated work hours.")
+        save_hours(date, "start")
         return
 
     last_entry = get_last_entry()
