@@ -102,9 +102,12 @@ def lunch():
         click.echo(f"Started lunch at {date.strftime(FORMAT)}")
 
         # Wait 30 minutes, initialize progress bar
-        for i in tqdm(range(30)):
-            time.sleep(60)
-        
+        try:
+            for i in tqdm(range(30)):
+                time.sleep(60)
+        except KeyboardInterrupt:
+            click.echo("Lunch canceled.")
+
         # Resume work
         date = get_current_time()
         save_hours(date, "start")
